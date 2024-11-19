@@ -17,7 +17,7 @@ BANDWIDTH_THRESHOLD_MBPS = 40 # this is in mbps so putting 100 means 100mbps is 
 
 CHECK_INTERVAL=5
 MONITOR_INTERVAL=1
-ALLOWED_CHANNEL_ID = 1307615043566833664
+ALLOWED_CHANNEL_ID = 000000000000000 # Replace this with your channel id for the bot commands to be in.
 
 # Change your bot token, otherwise this obviously wont work. You can get your Discord bot token from the Discord developer portal.
 TOKEN = 'YOUR_BOT_TOKEN'
