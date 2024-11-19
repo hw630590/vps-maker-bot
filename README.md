@@ -1,8 +1,8 @@
 # vps-maker-bot
 A Discord VPS maker bot.
 
-## This only supports windows sadly.
-- Running this on a Linux machine will be coming soon hopefully.
+## This only supports Windows 10 and 11.
+- Running this on a Linux machine will be coming soon.
 
 
 # Get Started
