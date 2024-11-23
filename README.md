@@ -25,7 +25,7 @@ A Discord VPS maker bot.
 3. sudo dnf install -y docker-ce
 
 ## Check for Docker
-1. docker --version
+- docker --version
 ## With systemctl:
 1. sudo systemctl start docker
 2. sudo systemctl enable docker
