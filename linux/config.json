@@ -1,0 +1,9 @@
+{
+    "TOKEN": "YOUR_BOT_TOKEN",
+    "DOCKER_IMAGES": {
+        "UBUNTU": "ubuntu",
+        "DEBIAN": "debian",
+        "ALPINE": "alpine"
+    },
+    "MAX_MEMORY": "2g"
+}
