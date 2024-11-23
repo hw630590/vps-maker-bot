@@ -26,10 +26,17 @@ A Discord VPS maker bot.
 
 ## Check for Docker
 1. docker --version
-2. sudo systemctl start docker
-3. sudo systemctl enable docker
-4. sudo systemctl status docker
-5. If you want to allow docker commands without sudo, you can do sudo usermod -aG docker $USER, then logout and login.
+## With systemctl:
+1. sudo systemctl start docker
+2. sudo systemctl enable docker
+3. sudo systemctl status docker
+## Without systemctl:
+1. Using service: sudo service docker start
+2. Starting manually: sudo dockerd
+3. sudo /etc/init.d/docker start
+4. sudo /etc/init.d/docker enable
+5. ps aux | grep dockerd
+- If you want to allow docker commands without sudo, you can do sudo usermod -aG docker $USER, then logout and login.
 
 ## Discord bot prepping:
 1. pip install discord.py psutil
