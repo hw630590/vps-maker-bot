@@ -42,3 +42,11 @@ A Discord VPS maker bot.
 1. pip install discord.py psutil
 2. Go to config.json and change the values to what you want.
 3. python linuxvpsbot.py
+
+# Future Plans
+- In the future, we are planning to add the following things:
+1. Renew system
+2. Different plans (free, paid)
+3. Purging system (setting a timer for a specified amount of days before stopping all containers, and they can restart their containers with the /start-container command)
+4. Earning coins (for the renew system, you earn coins by doing tasks, such as fishing, mining for ores, etc
+5. CentOS, REHL & Fedora support
