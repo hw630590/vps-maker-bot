@@ -51,7 +51,7 @@ A Discord VPS maker bot.
 # Future Plans
 - In the future, we are planning to add the following things:
 1. Renew system
-2. Different plans (free, paid)
+2. Different plans (free, paid (using credits) and also there will also be plans: 10 credits - free vps | 25 credits - paid plan #1 vps | 50 credits = paid plan #2 vps | 100 credits - paid plan #3 vps | 250 credits - paid plan #4 vps and finally 500 credits - paid plan #5 vps)
 3. Purging system (setting a timer for a specified amount of days before stopping all containers, and they can restart their containers with the /start-container command)
 4. Earning coins (for the renew system, you earn coins by doing tasks, such as fishing, mining for ores, etc
 5. CentOS, REHL & Fedora support
