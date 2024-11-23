@@ -15,6 +15,11 @@ A Discord VPS maker bot.
 4. sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 5. sudo apt update
 6. sudo apt install -y docker-ce
+## For Alpine:
+1. apk update
+2. apk add docker
+3. service docker start
+4. rc-update add docker default
 ## For CentOS/RHEL:
 1. sudo yum install -y yum-utils
 2. sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
