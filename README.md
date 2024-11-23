@@ -5,7 +5,7 @@ A Discord VPS maker bot.
 1. Make sure you have Docker Desktop installed from https://www.docker.com/products/docker-desktop/ and choose Windows - AMD64 or Windows - ARM64 depending on your computer type.
 2. Start Docker Desktop by restarting after the installation and opening it.
 3. pip install discord.py psutil
-5. python windowsvpsbot.py
+4. python windowsvpsbot.py
 
 # Getting Started - Linux
 ## For Ubuntu/Debian:
@@ -33,4 +33,5 @@ A Discord VPS maker bot.
 
 ## Discord bot prepping:
 1. pip install discord.py psutil
-2. python linuxvpsbot.py
+2. Go to config.json and change the values to what you want.
+3. python linuxvpsbot.py
