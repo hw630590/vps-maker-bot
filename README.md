@@ -50,8 +50,38 @@ A Discord VPS maker bot.
 
 # Future Plans
 - In the future, we are planning to add the following things:
-1. Renew system
-2. Different plans (free, paid (using credits) and also there will also be plans: 10 credits - free vps | 25 credits - paid plan #1 vps | 50 credits = paid plan #2 vps | 100 credits - paid plan #3 vps | 250 credits - paid plan #4 vps and finally 500 credits - paid plan #5 vps)
-3. Purging system (setting a timer for a specified amount of days before stopping all containers, and they can restart their containers with the /start-container command)
-4. Earning coins (for the renew system, you earn coins by doing tasks, such as fishing, mining for ores, etc
-5. CentOS, REHL & Fedora support
+Commands being added:
+/port-add - adds a port
+/setup-serveo [port] - deploys a serveo.io and sends it to you
+/deploy-arch - Deploys a Linux Arch container
+/port-remove [port] – Removes a specific port from the system or configuration.
+/status-check [id] – Checks the status of a deployed service or container.
+/container-start [id] – Starts a specific container by name or ID.
+/container-stop [id] – Stops a specific container by name or ID.
+/list-containers – Lists all running or deployed containers.
+/log-view [id] – Views logs for a specific container or service.
+/resource-monitor [id] – Monitors CPU, memory, and disk usage of containers or system resources.
+/backup-container [id] – Backs up a specific container's data or configuration.
+/restore-backup [id] – Restores a container from a backup.
+/update-container [id] – Updates the image or service running inside a container.
+/config-dump [id] – Dumps the configuration of a system or container for backup or debugging purposes.
+/clear-cache [id] – Clears the system or application cache to free up resources.
+/create-user [username] [password] – Creates a new user account in the system or container.
+/user-remove [username] [password] – Removes an existing user from the system or container.
+/container-info – Displays detailed information about a specific container or service.
+/renew-container [id] - Renews your container with 10 credits each 3 days.
+/deploy-centos - Deploy a CentOS container.
+/deploy-rehl - Deploy a REHL container.
+
+HOW TO EARN CREDITS:
+/daily-credits - Earn your daily credits (3)
+/minigame - Earn 0.0025 coins per click
+/daily-wordle - Earn your daily wordle credits for completing it. (1)
+/daily-globle - Earn your daily globle credits for completing the correct country.
+
+COMMANDS BEING CHANGED:
+/deploy-ubuntu -> /deploy-ubuntu [version]
+/deploy-debian -> /deploy-debian [version]
+/deploy-alpine -> /deploy-alpine [version]
+
+We will also add back LIVE VPS Node stats
