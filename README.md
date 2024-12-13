@@ -86,7 +86,7 @@ A Discord VPS maker bot.
 In the future, we are planning to add the following things:
 
 - /port-add – adds a port
-- /setup-serveo [port] – deploys a serveo.io and sends it to you
+- /setup-serveo [port] [id] – deploys a serveo.io and sends it to you
 - /deploy-arch – Deploys a Linux Arch container
 - /port-remove [port] – Removes a specific port from the system or configuration.
 - /status-check [id] – Checks the status of a deployed service or container.
