@@ -49,8 +49,7 @@ A Discord VPS maker bot.
 3. python linuxvpsbot.py
 
 # Future Plans
-- In the future, we are planning to add the following things:
-Commands being added:
+In the future, we are planning to add the following things:
 /port-add - adds a port
 /setup-serveo [port] - deploys a serveo.io and sends it to you
 /deploy-arch - Deploys a Linux Arch container
