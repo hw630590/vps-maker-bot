@@ -71,9 +71,8 @@ A Discord VPS maker bot.
    sudo /etc/init.d/docker start
    sudo /etc/init.d/docker enable
 
-- If you want to allow Docker commands without sudo, you can do:
-   sudo usermod -aG docker $USER
-   Then logout and login.
+- If you want to allow Docker commands without sudo, you can do: sudo usermod -aG docker $USER
+Then logout and login.
 
 ## Discord bot prepping:
 1. Install dependencies:
@@ -82,41 +81,13 @@ A Discord VPS maker bot.
 3. Run the bot:
    python linuxvpsbot.py
 
-## Future Plans
-In the future, we are planning to add the following things:
-
-- /port-add – adds a port
-- /setup-serveo [port] [id] – deploys a serveo.io and sends it to you
-- /deploy-arch – Deploys a Linux Arch container
-- /port-remove [port] – Removes a specific port from the system or configuration.
-- /status-check [id] – Checks the status of a deployed service or container.
-- /container-start [id] – Starts a specific container by name or ID.
-- /container-stop [id] – Stops a specific container by name or ID.
-- /list-containers – Lists all running or deployed containers.
-- /log-view [id] – Views logs for a specific container or service.
-- /resource-monitor [id] – Monitors CPU, memory, and disk usage of containers or system resources.
-- /backup-container [id] – Backs up a specific container's data or configuration.
-- /restore-backup [id] – Restores a container from a backup.
-- /update-container [id] – Updates the image or service running inside a container.
-- /config-dump [id] – Dumps the configuration of a system or container for backup or debugging purposes.
-- /clear-cache [id] – Clears the system or application cache to free up resources.
-- /create-user [username] [password] – Creates a new user account in the system or container.
-- /user-remove [username] [password] – Removes an existing user from the system or container.
-- /container-info – Displays detailed information about a specific container or service.
-- /renew-container [id] – Renews your container with 10 credits each 3 days.
-- /deploy-centos – Deploy a CentOS container.
-- /deploy-rehl – Deploy a REHL container.
-
-## HOW TO EARN CREDITS:
-
-- /daily-credits – Earn your daily credits (3)
-- /minigame – Earn 0.0025 coins per click
-- /daily-wordle – Earn your daily wordle credits for completing it (1)
-- /daily-globle – Earn your daily globle credits for completing the correct country.
-
-### COMMANDS BEING CHANGED:
-- /deploy-ubuntu -> /deploy-ubuntu [version]
-- /deploy-debian -> /deploy-debian [version]
-- /deploy-alpine -> /deploy-alpine [version]
-
-We will also add back LIVE VPS Node stats.
+## What are we working on?
+Well, there are a few things we are working on.
+- systemctl support - basicially systemd to be activated at boot for it to work, or just use systemctl3.py
+- /port-add - adds a port to the docker container to use
+- ssh root@ip -p port - this will be ipv4 support, which will use your public ip address and it uses the port github by steeldev, and add the port then put the port in there
+- anti-abuse systems - these include anti cpu (already added), anti ram, anti network, etc
+- renew system - allows the user to renew their server, which needs them to run the /renew-container [container-id] command, which will renew the container for the next 3 days, and resets each 2 days so there is a one day timeframe to renew your server.
+- anti disk - if a container goes over a limit which you specify in the python file like disk-limit= then if they reach over that limit whatever is installed automaticially gets deleted
+- multiple node support - link multiple nodes to make the container create on a server that you have linked and made
+- vps node stats - a channel which sends an embed of the cpu, ram, disk and network stats and updates each 10 seconds
