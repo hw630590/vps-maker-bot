@@ -8,23 +8,20 @@ import psutil
 from threading import Thread
 import datetime
 import time
+import requests
+import random
+import re
+import socket
+import aiohttp
 # pip install discord.py psutil
 
-# Anti Resource - makes it so that people cant break your local machine
-CPU_THRESHOLD=25 # % of max cpu for processes
-BANDWIDTH_THRESHOLD_MBPS = 40 # this is in mbps so putting 100 means 100mbps is your max network usage.
-# This also stops people from using your machine for mining or other resource intensive tasks, such as DDoSing or Minecraft bots.
-
-CHECK_INTERVAL=5
-MONITOR_INTERVAL=1
-ALLOWED_CHANNEL_ID = 000000000000000 # Replace this with your channel id for the bot commands to be in.
-
-# Change your bot token, otherwise this obviously wont work. You can get your Discord bot token from the Discord developer portal.
-TOKEN = 'YOUR_BOT_TOKEN'
+TOKEN = '' # CHANGE YOUR TOKEN, silly..
 
 intents = discord.Intents.default()
 
 client = commands.Bot(command_prefix="!", intents=intents) # DO NOT CHANGE
+
+webhook_url = '' # updated anti miner - high cpu processes get killed and posted to a webhook to shame the user 😂😂
 
 # You need to change these. You first need to pull these:
 # pull ubuntu:latest
@@ -40,38 +37,16 @@ monitored_containers = {}
 
 MAX_MEMORY = '2g' # Change to your desired memory usage. 2g = 2gb, 4g = 4gb, 8g = 8gb, etc.
 # If you are looking for the server limit, they can make one of each container before being unable to make any more.
+CPU_THRESHOLD = 50 # in % (e.g. 50 = 50%, 100 = 100%, 75 = 75%, etc)
 
-# !! Editing below this may result in the code not working. !!
-async def get_network_usage_per_process():
-    """
-    Get network usage for each process on the system.
-    Returns a dictionary with PID as keys and bandwidth (in MBps) as values.
-    """
-    network_usage = {}
-
-    for proc in psutil.process_iter(attrs=['pid', 'name']):
-        try:
-            pid = proc.info['pid']
-            io_counters = proc.net_io_counters()
-            if io_counters:
-                network_usage[pid] = {
-                    'name': proc.info['name'],
-                    'sent': io_counters.bytes_sent / (1024 * 1024),  
-                    'recv': io_counters.bytes_recv / (1024 * 1024),  
-                }
-        except (psutil.AccessDenied, psutil.NoSuchProcess):
-            continue
-
-    return network_usage
-
-async def monitor_cpu(container_id): # This may not work for alpine sadly, but they cant do much with alpine.
+async def monitor_cpu(container_id):
     """
     Monitors CPU usage of a container and kills high-CPU processes.
     Stops monitoring if the container is deleted.
     """
     while True:
         try:
-
+            # Check if the container is still running
             result = await asyncio.create_subprocess_exec(
                 'docker', 'ps', '--filter', f'id={container_id}', '-q',
                 stdout=subprocess.PIPE
@@ -79,8 +54,9 @@ async def monitor_cpu(container_id): # This may not work for alpine sadly, but t
             stdout, _ = await result.communicate()
             if not stdout.decode('utf-8').strip():
                 print(f"Container {container_id} has been deleted. Stopping monitoring.")
-                break
+                return  # Exit the loop if the container is deleted
 
+            # Get the container's top processes
             result = await asyncio.create_subprocess_exec(
                 'docker', 'exec', container_id, 'top', '-b', '-n', '1',
                 stdout=subprocess.PIPE
@@ -110,12 +86,33 @@ async def monitor_cpu(container_id): # This may not work for alpine sadly, but t
                 process_name = columns[11].strip()
 
                 # Command whitelist. *apt and http are required to install tmate*
-                if any(proc in process_name.lower() for proc in ['apt', 'http', 'dpkg', 'dpkg-deb', 'store', 'deb-syste+', 'curl', 'xz', 'tar', 'python3.12', 'pip']):
+                if any(proc in process_name.lower() for proc in ['apk', 'apt', 'http', 'dpkg', 'dpkg-deb', 'store', 'deb-syste+', 'curl', 'xz', 'tar', 'python3.12', 'pip']):
                     continue  
 
                 if cpu_usage > CPU_THRESHOLD:
+                    # Kill the high-CPU process
                     await asyncio.create_subprocess_exec('docker', 'exec', container_id, 'kill', '-9', pid)
                     print(f"Killed process {process_name} (PID: {pid}, CPU: {cpu_usage}%)")
+
+                    # Send a webhook notification
+                    async with aiohttp.ClientSession() as session:
+                        payload = {
+                            "embeds": [
+                                {
+                                    "title": "High CPU Process Killed",
+                                    "description": (
+                                        f"**Container ID:** `{container_id}`\n"
+                                        f"**Process Name:** `{process_name}`\n"
+                                        f"**PID:** `{pid}`\n"
+                                        f"**CPU Usage:** `{cpu_usage}%`"
+                                    ),
+                                    "color": 15158332  # Red color
+                                }
+                            ]
+                        }
+                        async with session.post(webhook_url, json=payload) as response:
+                            if response.status != 204:
+                                print(f"Failed to send webhook: {response.status}")
 
         except Exception as e:
             print(f"Error monitoring container {container_id}: {e}")
@@ -128,21 +125,10 @@ async def monitor_container(container_id):
     """
     while True:
         try:
-
             await monitor_cpu(container_id)
-
-            network_usage = await get_network_usage_per_process()
-            for pid, stats in network_usage.items():
-                total_usage = stats['sent'] + stats['recv']  
-                if total_usage > BANDWIDTH_THRESHOLD_MBPS:
-
-                    print(f"Killed process {stats['name']} (PID: {pid}) due to high network usage: {total_usage:.2f} MBps")
-                    psutil.Process(pid).kill()
-
         except Exception as e:
             print(f"Error monitoring container {container_id}: {e}")
-
-        await asyncio.sleep(5)
+            await asyncio.sleep(5)  # Wait before retrying to monitor the container again
 
 async def monitor_containers():
     """
@@ -150,7 +136,6 @@ async def monitor_containers():
     """
     while True:
         try:
-
             result = await asyncio.create_subprocess_exec(
                 'docker', 'ps', '-q',
                 stdout=subprocess.PIPE
@@ -162,13 +147,15 @@ async def monitor_containers():
             for container_id in container_ids:
                 tasks.append(monitor_container(container_id))
 
-            await asyncio.gather(*tasks)  
+            await asyncio.gather(*tasks)  # Monitor all containers concurrently
 
         except Exception as e:
             print(f"Error checking containers: {e}")
 
         await asyncio.sleep(5)
 
+
+# !! Editing below this may result in the code not working. !!
 def get_containers():
 
     result = subprocess.run(['docker', 'ps', '-a', '--format', '{{.ID}} {{.Names}}'], stdout=subprocess.PIPE)
@@ -222,18 +209,20 @@ async def deploy_ubuntu(interaction: discord.Interaction):
         subprocess.run(["docker", "start", container_name])
         await interaction.response.send_message(f"Container `{container_name}` was restarted.")
     else:
-        await interaction.response.send_message(f"Creating instance, this should only take a few seconds... | Powered by [Hagey VPS](https://discord.gg/XpKkXt9T9A)")
+        await interaction.response.send_message(f"Creating instance, this should only take a few seconds...")
 
         subprocess.run([
-            "docker", "run", "-d", "--name", container_name, 
-            "--memory", MAX_MEMORY, DOCKER_IMAGE_UBUNTU, "bash", "-c", 
-            """
-            apt update && apt install -y tmate &&
-            tmate -F
-            """
-        ])
+    "docker", "run", "-d", "--name", container_name,
+    "--memory", MAX_MEMORY,
+    DOCKER_IMAGE_UBUNTU, "bash", "-c",
+    """
+    apt update &&
+    apt install -y tmate &&
+    tmate -F
+    """
+])
 
-    for _ in range(10):  
+    for _ in range(30):  
         docker_logs = subprocess.run(
             ["docker", "logs", container_name],
             stdout=subprocess.PIPE,
@@ -280,7 +269,7 @@ async def deploy_debian(interaction: discord.Interaction):
         subprocess.run(["docker", "start", container_name])
         await interaction.response.send_message(f"Container `{container_name}` was restarted.")
     else:
-        await interaction.response.send_message(f"Creating instance, this should only take a few seconds... | Powered by [Hagey VPS](https://discord.gg/XpKkXt9T9A)")
+        await interaction.response.send_message(f"Creating instance, this should only take a few seconds...")
 
         subprocess.run([
             "docker", "run", "-d", "--name", container_name, 
@@ -510,7 +499,7 @@ async def on_ready():
     await client.tree.sync()
     print(f'Synced commands.')
     try:
-        client.loop.create_task(monitor_containers())
+        asyncio.create_task(monitor_containers())
         print(f'Started monitoring containers.')
         await update_bot_status()
     except Exception as e:
